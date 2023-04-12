@@ -1,16 +1,18 @@
 #![feature(test)]
 extern crate test;
 
-use std::thread;
 use std::sync::Arc;
+use std::thread;
 use std::time::Duration;
 use test::Bencher;
 
-use crossbeam_channel::bounded;
 use async_lock::Mutex;
+use crossbeam_channel::bounded;
 
-use pi_async::rt::{startup_global_time_loop, AsyncRuntime,
-                   multi_thread::{StealableTaskPool, MultiTaskRuntime, MultiTaskRuntimeBuilder}};
+use pi_async_rt::rt::{
+    multi_thread::{MultiTaskRuntimeBuilder, StealableTaskPool},
+    startup_global_time_loop, AsyncRuntime,
+};
 
 #[bench]
 fn pi_async_bench_async_mutex(b: &mut Bencher) {
@@ -18,20 +20,14 @@ fn pi_async_bench_async_mutex(b: &mut Bencher) {
 
     thread::sleep(Duration::from_millis(10000));
 
-    let pool = StealableTaskPool::with(2,
-                                       100000,
-                                       [1, 254],
-                                       3000);
+    let pool = StealableTaskPool::with(2, 100000, [1, 254], 3000);
     let rt0 = MultiTaskRuntimeBuilder::new(pool)
         .thread_stack_size(2 * 1024 * 1024)
         .init_worker_size(2)
         .set_worker_limit(2, 2)
         .build();
 
-    let pool = StealableTaskPool::with(2,
-                                       100000,
-                                       [1, 254],
-                                       3000);
+    let pool = StealableTaskPool::with(2, 100000, [1, 254], 3000);
     let rt1 = MultiTaskRuntimeBuilder::new(pool)
         .thread_stack_size(2 * 1024 * 1024)
         .init_worker_size(2)

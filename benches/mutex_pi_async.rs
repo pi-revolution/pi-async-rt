@@ -10,17 +10,17 @@ use std::time::Duration;
 
 use crossbeam_channel::{Sender, bounded};
 use async_lock::Mutex;
-use pi_async::{rt::{startup_global_time_loop,
+use pi_async_rt::{rt::{startup_global_time_loop,
                     AsyncRuntime, AsyncRuntimeExt,
                     single_thread::{SingleTaskRunner, SingleTaskRuntime},
                     multi_thread::{StealableTaskPool, MultiTaskRuntimeBuilder, MultiTaskRuntime}}};
-use pi_async::rt::single_thread::SingleTaskPool;
+use pi_async_rt::rt::single_thread::SingleTaskPool;
 
 #[derive(Clone)]
 struct AtomicCounter(Sender<()>);
 impl Drop for AtomicCounter {
     fn drop(&mut self) {
-        self.0.send(()); //通知执行完成
+        let _ = self.0.send(()); //通知执行完成
     }
 }
 
@@ -42,7 +42,7 @@ fn pi_async_contention(b: &mut Bencher) {
         let (send, recv) = bounded(1);
         let counter = Arc::new(AtomicCounter(send));
 
-        rt.spawn(contention_run(rt_copy, counter, 10, 1000));
+        let _ = rt.spawn(contention_run(rt_copy, counter, 10, 1000));
         recv.recv().unwrap();
     });
 }
@@ -69,7 +69,7 @@ async fn contention_run(rt: MultiTaskRuntime<(), StealableTaskPool<()>>, counter
             for _ in 0..iter {
                 let _ = m.lock().await;
             }
-            counter_copy;
+            drop(counter_copy);
         });
     }
 }

@@ -4,11 +4,6 @@ extern crate test;
 
 use test::Bencher;
 
-use std::thread;
-use std::sync::Arc;
-use std::time::Duration;
-
-use crossbeam_channel::{Sender, bounded};
 
 fn rt() -> tokio::runtime::Runtime {
     tokio::runtime::Builder::new_current_thread().enable_time().build().unwrap()

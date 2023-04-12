@@ -4,12 +4,12 @@ extern crate test;
 
 use test::Bencher;
 
-use std::thread;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering::Relaxed;
 use std::sync::{mpsc, Arc};
+use std::thread;
 
-use crossbeam_channel::{Sender, bounded};
+use crossbeam_channel::{bounded, Sender};
 
 use tokio::runtime::{self, Runtime};
 use tokio::sync::oneshot;
@@ -18,7 +18,7 @@ use tokio::sync::oneshot;
 struct AtomicCounter(Sender<()>);
 impl Drop for AtomicCounter {
     fn drop(&mut self) {
-        self.0.send(()); //通知执行完成
+        let _ = self.0.send(()); //通知执行完成
     }
 }
 
@@ -44,7 +44,7 @@ fn tokio_spawn_empty_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     let _ = rt0.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -53,7 +53,7 @@ fn tokio_spawn_empty_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     let _ = rt1.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -62,7 +62,7 @@ fn tokio_spawn_empty_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     let _ = rt2.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -71,7 +71,7 @@ fn tokio_spawn_empty_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     let _ = rt3.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -103,8 +103,9 @@ fn tokio_await_empty_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -112,8 +113,9 @@ fn tokio_await_empty_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -121,8 +123,9 @@ fn tokio_await_empty_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -130,8 +133,9 @@ fn tokio_await_empty_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
         }
@@ -163,7 +167,7 @@ fn tokio_spawn_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     let _ = rt0_copy.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -173,7 +177,7 @@ fn tokio_spawn_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     let _ = rt1_copy.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -183,7 +187,7 @@ fn tokio_spawn_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     let _ = rt2_copy.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -193,7 +197,7 @@ fn tokio_spawn_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     let _ = rt3_copy.spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -327,7 +331,7 @@ fn tokio_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter0.clone();
                     let _ = rt0.spawn(async move {
                         let _ = tokio::spawn(async move {
-                            counter_copy;
+                            drop(counter_copy);
                         });
                     });
                 }
@@ -338,7 +342,7 @@ fn tokio_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter1.clone();
                     let _ = rt1.spawn(async move {
                         let _ = tokio::spawn(async move {
-                            counter_copy;
+                            drop(counter_copy);
                         });
                     });
                 }
@@ -349,7 +353,7 @@ fn tokio_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter2.clone();
                     let _ = rt2.spawn(async move {
                         let _ = tokio::spawn(async move {
-                            counter_copy;
+                            drop(counter_copy);
                         });
                     });
                 }
@@ -360,7 +364,7 @@ fn tokio_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter3.clone();
                     let _ = rt3.spawn(async move {
                         let _ = tokio::spawn(async move {
-                            counter_copy;
+                            drop(counter_copy);
                         });
                     });
                 }

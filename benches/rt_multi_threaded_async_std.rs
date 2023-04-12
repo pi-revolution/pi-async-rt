@@ -4,20 +4,20 @@ extern crate test;
 
 use test::Bencher;
 
-use std::thread;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering::Relaxed;
 use std::sync::{mpsc, Arc};
+use std::thread;
 
 use async_std::task;
+use crossbeam_channel::{bounded, Sender};
 use futures::channel::oneshot;
-use crossbeam_channel::{Sender, bounded};
 
 #[derive(Clone)]
 struct AtomicCounter(Sender<()>);
 impl Drop for AtomicCounter {
     fn drop(&mut self) {
-        self.0.send(()); //通知执行完成
+        let _ = self.0.send(()); //通知执行完成
     }
 }
 
@@ -37,7 +37,7 @@ fn async_std_spawn_empty_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -46,7 +46,7 @@ fn async_std_spawn_empty_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -55,7 +55,7 @@ fn async_std_spawn_empty_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -64,7 +64,7 @@ fn async_std_spawn_empty_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -90,8 +90,9 @@ fn async_std_await_empty_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -99,8 +100,9 @@ fn async_std_await_empty_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -108,8 +110,9 @@ fn async_std_await_empty_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
 
@@ -117,8 +120,9 @@ fn async_std_await_empty_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     async move {
-                        counter_copy;
-                    }.await;
+                        drop(counter_copy);
+                    }
+                    .await;
                 }
             });
         }
@@ -143,7 +147,7 @@ fn async_std_spawn_many(b: &mut Bencher) {
                 for _ in 0..2500 {
                     let counter_copy = counter0.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -152,7 +156,7 @@ fn async_std_spawn_many(b: &mut Bencher) {
                 for _ in 2500..5000 {
                     let counter_copy = counter1.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -161,7 +165,7 @@ fn async_std_spawn_many(b: &mut Bencher) {
                 for _ in 5000..7500 {
                     let counter_copy = counter2.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -170,7 +174,7 @@ fn async_std_spawn_many(b: &mut Bencher) {
                 for _ in 7500..10000 {
                     let counter_copy = counter3.clone();
                     let _ = task::spawn(async move {
-                        counter_copy;
+                        drop(counter_copy);
                     });
                 }
             });
@@ -292,7 +296,7 @@ fn async_std_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter0.clone();
                     let _ = task::spawn(async move {
                         let _ = task::spawn(async move {
-                            counter_copy;
+                            drop(counter_copy);
                         });
                     });
                 }
@@ -303,8 +307,8 @@ fn async_std_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter1.clone();
                     let _ = task::spawn(async move {
                         let _ = task::spawn(async move {
-                            counter_copy;
-                        });;
+                            drop(counter_copy);
+                        });
                     });
                 }
             });
@@ -314,8 +318,8 @@ fn async_std_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter2.clone();
                     let _ = task::spawn(async move {
                         let _ = task::spawn(async move {
-                            counter_copy;
-                        });;
+                            drop(counter_copy);
+                        });
                     });
                 }
             });
@@ -325,8 +329,8 @@ fn async_std_spawn_one_to_one(b: &mut Bencher) {
                     let counter_copy = counter3.clone();
                     let _ = task::spawn(async move {
                         let _ = task::spawn(async move {
-                            counter_copy;
-                        });;
+                            drop(counter_copy);
+                        });
                     });
                 }
             });

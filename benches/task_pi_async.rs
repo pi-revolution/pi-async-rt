@@ -5,14 +5,11 @@ extern crate test;
 use test::Bencher;
 
 use std::thread;
-use std::sync::Arc;
 use std::time::Duration;
 
-use crossbeam_channel::{Sender, bounded};
-use futures_util::TryFutureExt;
+use crossbeam_channel::{bounded, Sender};
 
-use pi_async::rt::{AsyncRuntime, AsyncRuntimeExt,
-                   serial_local_thread::{LocalTaskRunner, LocalTaskRuntime}};
+use pi_async_rt::rt::serial_local_thread::{LocalTaskRunner, LocalTaskRuntime};
 
 #[bench]
 fn pi_async_block_on(b: &mut Bencher) {
@@ -27,7 +24,7 @@ fn pi_async_block_on(b: &mut Bencher) {
 struct AtomicCounter(Sender<()>);
 impl Drop for AtomicCounter {
     fn drop(&mut self) {
-        self.0.send(()); //通知执行完成
+        let _ = self.0.send(()); //通知执行完成
     }
 }
 
@@ -51,7 +48,7 @@ fn pi_async_local_spawn_many(b: &mut Bencher) {
 
     b.iter(|| {
         let rt_copy = rt.clone();
-        rt.block_on(async move {
+        let _ = rt.block_on(async move {
             for _ in 0..COUNT {
                 let _ = rt_copy.spawn(async move {});
             }
@@ -70,14 +67,12 @@ fn pi_async_local_send_many(b: &mut Bencher) {
 
     b.iter(|| {
         for _ in 0..COUNT {
-            let _ = rt.send(async move {
-
-            });
+            let _ = rt.send(async move {});
         }
 
         let sender_copy = sender.clone();
         let _ = rt.send(async move {
-            sender_copy.send(());
+            let _ = sender_copy.send(());
         });
         let _ = receiver.recv().unwrap();
     });

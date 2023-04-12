@@ -1,5 +1,5 @@
 use futures::Future;
-use pi_async::{prelude::SingleTaskRunner, rt::AsyncRuntimeExt};
+use pi_async_rt::{prelude::SingleTaskRunner, rt::AsyncRuntimeExt};
 use std::{thread::sleep, time::Duration};
 
 /// Runs the provided future, blocking the current thread until the
