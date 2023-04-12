@@ -1,10 +1,10 @@
 [package]
 name = "pi-async-rt"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["vmos <vmos@fairblock.io>"]
 edition = "2018"
 description = "Based on future (MVP), a universal asynchronous runtime and tool used to provide a foundation for the outside world"
-repository = "https://github.com/GaiaWorld/pi_async.git"
+repository = "https://github.com/pi-revolution/pi-async-rt.git"
 license = "MIT OR Apache-2.0"
 keywords = ["pi", "async"]
 
