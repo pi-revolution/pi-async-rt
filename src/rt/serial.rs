@@ -20,7 +20,6 @@ use crossbeam_queue::ArrayQueue;
 use crossbeam_channel::{Sender, Receiver, unbounded};
 use flume::{Sender as AsyncSender, Receiver as AsyncReceiver, bounded as async_bounded};
 use num_cpus;
-use pi_time::Instant;
 
 use pi_hash::XHashMap;
 use pi_cancel_timer::Timer;

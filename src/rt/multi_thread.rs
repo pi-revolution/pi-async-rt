@@ -58,7 +58,6 @@ use rand::{Rng, thread_rng};
 use num_cpus;
 use wrr::IWRRSelector;
 use quanta::{Clock, Instant as QInstant};
-use pi_time::Instant;
 use tracing::Instrument;
 use log::{debug, warn};
 use tokio::time::interval;
