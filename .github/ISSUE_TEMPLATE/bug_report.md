@@ -1,44 +1,27 @@
 ---
-name: Bug Report
-about: Create a bug report for Rust.
-labels: C-bug
+name: Bug report
+about: Create a report to help us improve
+
 ---
-<!--
-Thank you for filing a bug report! 🐛 Please provide a short summary of the bug,
-along with any information you feel relevant to replicating the bug.
--->
 
-I tried this code:
+**Describe the bug**
+A clear and concise description of what the bug is.
 
-```rust
-<code>
-```
+**To Reproduce**
+Steps to reproduce the behavior:
 
-I expected to see this happen: *explanation*
+**Expected behavior**
+A clear and concise description of what you expected to happen.
 
-Instead, this happened: *explanation*
+**System:**
+ - OS: [e.g. macOS]
+ - Architecture: [e.g. x86_64]
+ - Version [e.g. 22]
+ - rustc version: [e.g. 1.28]
 
-### Meta
-<!--
-If you're using the stable version of the compiler, you should also check if the
-bug also exists in the beta or nightly versions.
--->
+**Version:**
+Crate: [e.g. client, server, resolver]
+Version: [e.g. 0.9.1]
 
-`rustc --version --verbose`:
-```
-<version>
-```
-
-<!--
-Include a backtrace in the code block by setting `RUST_BACKTRACE=1` in your
-environment. E.g. `RUST_BACKTRACE=1 cargo build`.
--->
-<details><summary>Backtrace</summary>
-<p>
-
-```
-<backtrace>
-```
-
-</p>
-</details>
+**Additional context**
+Add any other context about the problem here.
