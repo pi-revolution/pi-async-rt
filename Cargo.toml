@@ -1,6 +1,6 @@
 [package]
 name = "pi-async-rt"
-version = "0.1.3"
+version = "0.1.4"
 authors = ["vmos <vmosone007@gmail.com>"]
 edition = "2018"
 description = "Based on future (MVP), a universal asynchronous runtime and tool used to provide a foundation for the outside world"
