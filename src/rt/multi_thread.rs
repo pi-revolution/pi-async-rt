@@ -58,10 +58,7 @@ use rand::{Rng, thread_rng};
 use num_cpus;
 use wrr::IWRRSelector;
 use quanta::{Clock, Instant as QInstant};
-use tracing::Instrument;
 use log::{debug, warn};
-use tokio::time::interval;
-use tracing_subscriber::filter::combinator::Or;
 
 use super::{
     PI_ASYNC_LOCAL_THREAD_ASYNC_RUNTIME, PI_ASYNC_THREAD_LOCAL_ID, DEFAULT_MAX_HIGH_PRIORITY_BOUNDED, DEFAULT_HIGH_PRIORITY_BOUNDED, DEFAULT_MAX_LOW_PRIORITY_BOUNDED, alloc_rt_uid, local_async_runtime, AsyncMapReduce, AsyncPipelineResult, AsyncRuntime,
@@ -548,7 +545,7 @@ impl<O: Default + 'static> AsyncTaskPool<O> for StealableTaskPool<O> {
 
     #[inline]
     fn push_keep(&self, task: Arc<AsyncTask<Self::Pool, O>>) -> Result<()> {
-        self.push_priority(DEFAULT_MAX_HIGH_PRIORITY_BOUNDED, task)
+        self.push_priority(DEFAULT_HIGH_PRIORITY_BOUNDED, task)
     }
 
     #[inline]
@@ -1268,7 +1265,7 @@ impl<O: Default + 'static, P: AsyncTaskPoolExt<O> + AsyncTaskPool<O, Pool = P>> 
             match PI_ASYNC_THREAD_LOCAL_ID.try_with(move |thread_id| {
                 //将休眠的异步任务投递到当前派发线程的定时器内
                 let thread_id = unsafe { *thread_id.get() };
-                timers[thread_id].clone()
+                timers[thread_id & 0xffffffff].clone()
             }) {
                 Err(_) => {
                     panic!("Multi thread runtime timeout failed, reason: local thread id not match")

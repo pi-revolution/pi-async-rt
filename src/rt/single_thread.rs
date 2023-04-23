@@ -42,7 +42,6 @@ use futures::{
 };
 use parking_lot::{Condvar, Mutex};
 use quanta::Clock;
-use tracing_subscriber::filter::combinator::Or;
 
 use wrr::IWRRSelector;
 
